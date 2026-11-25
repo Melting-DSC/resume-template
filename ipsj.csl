@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="sort-only" default-locale="en-US">
+  <!--
+    情報処理学会 (IPSJ) 論文誌原稿の参考文献スタイル
+    参考: https://www.ipsj.or.jp/journal/submit/ronbun_j_prms.html
+          (2.8.4 参考文献 / 付録 参考文献の記載方法)
+
+    例:
+      [1] Feldman, J. and Gries, D.: Translater Writing System, Comm. ACM, Vol.11, No.2, pp.77-113 (1968).
+      [2] 大山一夫: 電子計算機, p.300, 情報出版, 東京 (1991).
+      [3] Tang, C.J. and Minneman, L.S.: VideoDraw: a video interface for collaborative drawing, Proc. CHI'90, pp.313-320, ACM (1990).
+
+    注: CSL 1.0.2 では文献ごとに言語を切り替えられないため、
+        区切り記号は英文用 (半角 , : . と半角スペース) に統一している。
+  -->
+  <info>
+    <title>Information Processing Society of Japan (IPSJ)</title>
+    <title-short>IPSJ</title-short>
+    <id>ipsj-journal-custom</id>
+    <link href="https://www.ipsj.or.jp/journal/submit/ronbun_j_prms.html" rel="documentation"/>
+    <category citation-format="numeric"/>
+    <category field="engineering"/>
+    <updated>2026-11-24T00:00:00+09:00</updated>
+    <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+  </info>
+
+  <locale>
+    <terms>
+      <term name="et-al">et al.</term>
+      <term name="and">and</term>
+      <term name="page" form="short">
+        <single>p.</single>
+        <multiple>pp.</multiple>
+      </term>
+      <term name="editor" form="short">
+        <single>Ed.</single>
+        <multiple>Eds.</multiple>
+      </term>
+      <term name="translator" form="short">
+        <single>Trans.</single>
+        <multiple>Trans.</multiple>
+      </term>
+      <term name="page-range-delimiter">-</term>
+      <term name="online">online</term>
+      <term name="available at">available from</term>
+      <term name="accessed">accessed</term>
+    </terms>
+  </locale>
+
+  <!-- ========== 著者 ========== -->
+  <!-- 3名以下は全員、4名以上は 3名 + et al.
+       英文は「姓, イニシャル.」(例: Rivest, R.L.)、和文はフルネーム -->
+  <macro name="author">
+    <names variable="author">
+      <name and="text" delimiter=", " delimiter-precedes-last="never" delimiter-precedes-et-al="always" et-al-min="4" et-al-use-first="3" initialize-with="." name-as-sort-order="all" sort-separator=", "/>
+      <substitute>
+        <names variable="editor"/>
+        <text variable="publisher"/>
+        <text variable="container-title"/>
+      </substitute>
+    </names>
+  </macro>
+
+  <macro name="editor">
+    <names variable="editor">
+      <name and="text" delimiter=", " delimiter-precedes-last="never" delimiter-precedes-et-al="always" et-al-min="4" et-al-use-first="3" initialize-with="." name-as-sort-order="all" sort-separator=", "/>
+      <label form="short" prefix=" (" suffix=")"/>
+    </names>
+  </macro>
+
+  <macro name="translator">
+    <names variable="translator">
+      <name and="text" delimiter=", " delimiter-precedes-last="never" initialize-with="." name-as-sort-order="all" sort-separator=", "/>
+      <label form="short" prefix=" (" suffix=")"/>
+    </names>
+  </macro>
+
+  <!-- ========== 各要素 ========== -->
+  <macro name="title">
+    <text variable="title"/>
+  </macro>
+
+  <!-- Vol.巻, No.号 -->
+  <macro name="volume-issue">
+    <group delimiter=", ">
+      <text variable="volume" prefix="Vol."/>
+      <text variable="issue" prefix="No."/>
+    </group>
+  </macro>
+
+  <!-- pp.始-終 / p.頁 -->
+  <macro name="pages">
+    <group>
+      <label variable="page" form="short"/>
+      <text variable="page"/>
+    </group>
+    <choose>
+      <if variable="DOI page" match="all">
+        <text term="online" prefix=" (" suffix=")"/>
+      </if>
+    </choose>
+  </macro>
+
+  <!-- 発行年: 半角スペース + (西暦年) -->
+  <macro name="year">
+    <choose>
+      <if variable="issued">
+        <date variable="issued" prefix=" (" suffix=")">
+          <date-part name="year"/>
+        </date>
+      </if>
+    </choose>
+  </macro>
+
+  <macro name="publisher">
+    <group delimiter=", ">
+      <choose>
+        <if variable="publisher">
+          <text variable="publisher"/>
+        </if>
+        <else>
+          <text variable="authority"/>
+        </else>
+      </choose>
+      <text variable="publisher-place"/>
+    </group>
+  </macro>
+
+  <macro name="doi-url">
+    <choose>
+      <if variable="DOI">
+        <text variable="DOI" prefix="DOI: "/>
+      </if>
+    </choose>
+  </macro>
+
+  <macro name="accessed">
+    <group>
+      <text term="available at"/>
+      <text variable="URL" prefix="&lt;" suffix="&gt;"/>
+      <date variable="accessed" prefix=" (" suffix=")">
+        <date-part name="year" prefix="accessed "/>
+        <date-part name="month" form="numeric-leading-zeros" prefix="-"/>
+        <date-part name="day" form="numeric-leading-zeros" prefix="-"/>
+      </date>
+    </group>
+  </macro>
+
+  <macro name="body">
+      <group delimiter=": ">
+        <text macro="author"/>
+        <choose>
+          <!-- 雑誌論文: 著者: 標題, 雑誌名, Vol.巻, No.号, pp.始-終 (年). -->
+          <if type="article-journal article-magazine article-newspaper article" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <text variable="container-title"/>
+              <text macro="volume-issue"/>
+              <text macro="pages"/>
+              <text macro="doi-url"/>
+            </group>
+          </if>
+          <!-- 国際会議・研究会: 著者: 標題, Proc. 会議名, 編者, pp.始-終, 出版社 (年). -->
+          <else-if type="paper-conference speech" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <text variable="container-title"/>
+              <text macro="volume-issue"/>
+              <text macro="pages"/>
+              <text variable="publisher"/>
+              <text macro="doi-url"/>
+            </group>
+          </else-if>
+          <!-- 章 (編者なし): 著者: 章題, 書名, pp.始-終, 出版社 (年). -->
+          <else-if type="chapter entry-encyclopedia entry-dictionary" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <text variable="container-title"/>
+              <text macro="pages"/>
+              <text macro="publisher"/>
+            </group>
+          </else-if>
+          <!-- 単行本: 著者: 書名, p.総頁数, 出版社, 所在地 (年). -->
+          <else-if type="book" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <group>
+                <text term="page" form="short" plural="false"/>
+                <text variable="number-of-pages"/>
+              </group>
+              <text macro="publisher"/>
+            </group>
+          </else-if>
+          <!-- 技術報告・研究報告: 著者: 標題, 報告名, Vol.巻, No.号, pp.始-終, 発行元 (年). -->
+          <else-if type="report" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <choose>
+                <if variable="container-title">
+                  <text variable="container-title"/>
+                </if>
+                <else-if variable="collection-title">
+                  <text variable="collection-title"/>
+                </else-if>
+                <else>
+                  <text variable="genre"/>
+                </else>
+              </choose>
+              <text macro="volume-issue"/>
+              <text variable="number" prefix="No."/>
+              <text macro="pages"/>
+              <text macro="publisher"/>
+              <text macro="doi-url"/>
+            </group>
+          </else-if>
+          <!-- 学位論文: 著者: 標題, 種別, 大学 (年). -->
+          <else-if type="thesis" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <text variable="genre"/>
+              <text macro="publisher"/>
+            </group>
+          </else-if>
+          <!-- Webページ: 著者: ページ名, サイト名 (online), available from<URL> (accessed YYYY-MM-DD). -->
+          <else-if type="webpage post post-weblog software dataset" match="any">
+            <group delimiter=", ">
+              <text macro="title"/>
+              <group delimiter=" ">
+                <choose>
+                  <if variable="container-title">
+                    <text variable="container-title"/>
+                  </if>
+                  <else>
+                    <text variable="authority"/>
+                  </else>
+                </choose>
+                <text term="online" prefix="(" suffix=")"/>
+              </group>
+              <text macro="accessed"/>
+            </group>
+          </else-if>
+          <!-- その他 -->
+          <else>
+            <group delimiter=", ">
+              <text macro="title"/>
+              <text variable="container-title"/>
+              <text macro="volume-issue"/>
+              <text macro="pages"/>
+              <text macro="publisher"/>
+              <text macro="doi-url"/>
+            </group>
+          </else>
+        </choose>
+      </group>
+  </macro>
+
+  <!-- ========== 本文中の引用: 右肩に [1] ========== -->
+  <citation collapse="citation-number">
+    <sort>
+      <key variable="citation-number"/>
+    </sort>
+    <layout vertical-align="sup" prefix="[" suffix="]" delimiter=",">
+      <text variable="citation-number"/>
+    </layout>
+  </citation>
+
+  <!-- ========== 参考文献リスト: 引用順 ========== -->
+  <bibliography second-field-align="flush" entry-spacing="0">
+    <layout suffix=".">
+      <text variable="citation-number" prefix="[" suffix="]"/>
+      <choose>
+        <!-- 編著書の章: 編者 (Eds.): 書名, 著者: 章題, pp.始-終, 出版社 (年). -->
+        <if type="chapter entry-encyclopedia entry-dictionary" match="any">
+          <choose>
+            <if variable="editor">
+          <group delimiter=", ">
+            <group delimiter=": ">
+              <text macro="editor"/>
+              <text variable="container-title"/>
+            </group>
+            <group delimiter=": ">
+              <names variable="author">
+                <name and="text" delimiter=", " delimiter-precedes-last="never" delimiter-precedes-et-al="always" et-al-min="4" et-al-use-first="3" initialize-with="." name-as-sort-order="all" sort-separator=", "/>
+              </names>
+              <text macro="title"/>
+            </group>
+            <text macro="pages"/>
+            <text macro="publisher"/>
+          </group>
+            </if>
+            <else>
+              <text macro="body"/>
+            </else>
+          </choose>
+        </if>
+        <else>
+          <text macro="body"/>
+        </else>
+      </choose>
+      <!-- 発行年 (Webページは参照日を付けるため省略) -->
+      <choose>
+        <if type="webpage post post-weblog" match="none">
+          <text macro="year"/>
+        </if>
+      </choose>
+    </layout>
+  </bibliography>
+</style>
+
